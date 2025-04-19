@@ -1,0 +1,28 @@
+{
+  "nodes": [
+    {
+      "id": "I n t r o d u c t i o n"
+    },
+    {
+      "id": "9"
+    },
+    {
+      "id": "i n t e r a c t i v e"
+    },
+    {
+      "id": "t i m i n d t r e e"
+    }
+  ],
+  "edges": [
+    {
+      "source": "I n t r o d u c t i o n",
+      "target": "9",
+      "relation": "number of episodes"
+    },
+    {
+      "source": "i n t e r a c t i v e",
+      "target": "t i m i n d t r e e",
+      "relation": "part of"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "ltimindtree_annual_report": {
+    "objects": {
+      "o0": {
+        "name": "##R",
+        "type": "MISC",
+        "attributes": [],
+        "relations": [
+          {
+            "name": "related_to",
+            "object": "o1"
+          },
+          {
+            "name": "related_to",
+            "object": "o2"
+          }
+        ]
+      },
+      "o1": {
+        "name": "##DIAN",
+        "type": "MISC",
+        "attributes": [],
+        "relations": [
+          {
+            "name": "related_to",
+            "object": "o2"
+          }
+        ]
+      },
+      "o2": {
+        "name": "##R",
+        "type": "MISC",
+        "attributes": []
+      }
+    }
+  }
+}
