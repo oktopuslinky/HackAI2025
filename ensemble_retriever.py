@@ -13,6 +13,8 @@ from langchain.schema import Document
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 from langchain.chains import RetrievalQA
+from langchain.chains import ConversationalRetrievalChain
+from langchain.memory import ConversationBufferMemory
 
 # Existing functions: extract_text_from_pdf, chunk_pdf_text, build_ensemble_retriever, 
 # normalize_scores, compute_hybrid_scores, initialize_groq_llm, build_qa_chain (unchanged)
@@ -132,31 +134,50 @@ def initialize_groq_llm():
         print(f"Error initializing Groq LLM: {e}")
         raise
 
+# def build_qa_chain(retriever, llm):
+#     try:
+#         prompt = PromptTemplate(
+#             input_variables=["context", "question"],
+#             template="""You are a financial expert. Using the following context, answer the question concisely and professionally. If the context is insufficient, provide a best-guess answer using financial reasoning.
+
+# Context:
+# {context}
+
+# Question:
+# {question}
+
+# Answer:"""
+#         )
+#         qa_chain = RetrievalQA.from_chain_type(
+#             llm=llm,
+#             retriever=retriever,
+#             chain_type="stuff",
+#             chain_type_kwargs={"prompt": prompt},
+#             return_source_documents=True
+#         )
+#         return qa_chain
+#     except Exception as e:
+#         print(f"Error building QA chain: {e}")
+#         raise
+
 def build_qa_chain(retriever, llm):
     try:
-        prompt = PromptTemplate(
-            input_variables=["context", "question"],
-            template="""You are a financial expert. Using the following context, answer the question concisely and professionally. If the context is insufficient, provide a best-guess answer using financial reasoning.
-
-Context:
-{context}
-
-Question:
-{question}
-
-Answer:"""
+        memory = ConversationBufferMemory(
+            memory_key="chat_history",
+            return_messages=True
         )
-        qa_chain = RetrievalQA.from_chain_type(
+        qa_chain = ConversationalRetrievalChain.from_llm(
             llm=llm,
             retriever=retriever,
+            memory=memory,
             chain_type="stuff",
-            chain_type_kwargs={"prompt": prompt},
-            return_source_documents=True
+            verbose=True,  # optional, can show intermediate steps
         )
         return qa_chain
     except Exception as e:
         print(f"Error building QA chain: {e}")
         raise
+
 
 def main():
     pdf_path = "ltimindtree_annual_report.pdf"
@@ -178,19 +199,22 @@ def main():
                 print("Please enter a valid question.\n")
                 continue
 
-            # Get QA response
-            response = qa_chain.invoke({"query": query})
-            print(f"\nAnswer: {response['result']}\n")
+            
+            # response = qa_chain.invoke({"query": query})
+            # print(f"\nAnswer: {response['result']}\n")
+            response = qa_chain({"question": query})
+            print(f"\nAnswer: {response['answer']}\n")
+
 
             # Compute hybrid scores and display only the highest
-            hybrid_scores = compute_hybrid_scores(query, bm25_retriever, faiss_retriever, documents)
-            if hybrid_scores:  # Check if there are any scores
-                top_doc, top_score = hybrid_scores[0]  # Get the document with the highest score
-                print("Confidence Score:")
+            # hybrid_scores = compute_hybrid_scores(query, bm25_retriever, faiss_retriever, documents)
+            # if hybrid_scores:  # Check if there are any scores
+            #     top_doc, top_score = hybrid_scores[0]  # Get the document with the highest score
+            #     print("Confidence Score:")
            
-                print(f"Score: {top_score:.4f}")
-            else:
-                print("No documents retrieved.\n")
+            #     print(f"Score: {top_score:.4f}")
+            # else:
+            #     print("No documents retrieved.\n")
 
     except Exception as e:
         print(f"An error occurred: {e}")
