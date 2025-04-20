@@ -15,6 +15,7 @@ from langchain_groq import ChatGroq
 from langchain.chains import RetrievalQA
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
+from image_extractor_final import get_descriptions
 
 # Existing functions: extract_text_from_pdf, chunk_pdf_text, build_ensemble_retriever, 
 # normalize_scores, compute_hybrid_scores, initialize_groq_llm, build_qa_chain (unchanged)
@@ -26,6 +27,10 @@ def extract_text_from_pdf(pdf_path):
         text = page.get_text()
         all_text += f"\n--- Page {page_num + 1} ---\n{text}"
     all_text = ' '.join(all_text.split())
+    '''descriptions = get_descriptions('ltimindtree_annual_report.pdf')
+    for desc in descriptions[:6]:
+        all_text += desc'''
+            
     return all_text
 
 def chunk_pdf_text(pdf_path, chunk_size=2000, chunk_overlap=500):
