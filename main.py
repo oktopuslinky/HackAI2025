@@ -154,6 +154,8 @@ async def query_pdf(query: QueryRequest):
 
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
+    
+
 
 # ----------------------
 # To run server:
